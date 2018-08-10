@@ -1,6 +1,6 @@
 # Aula20180807
 
-Exercício prático
+Exercício prático utilizando modelo
 
 Criar aplicativo para cadastros de alunos
 
