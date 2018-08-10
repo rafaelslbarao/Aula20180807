@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">ControleDeUniversidade</string>
+    <string name="OK">OK</string>
+    <string name="Nome">Nome</string>
+    <string name="Adicionar">Adicionar</string>
+    <string name="Cadastro">Cadastro</string>
+    <string name="Codigo">Código</string>
+    <string name="Cidade">Cidade</string>
+    <string name="ListaDeUniversidades">Lista de Universidades</string>
+</resources>
