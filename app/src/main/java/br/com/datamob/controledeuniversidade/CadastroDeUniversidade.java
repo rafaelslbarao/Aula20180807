@@ -174,8 +174,8 @@ public class CadastroDeUniversidade extends AppCompatActivity
     {
         if (universidadeEntity == null)
         {
-            universidadeEntity = new UniversidadeEntity();
-            preencheValores();
+            UniversidadeEntity universidadeEntity = new UniversidadeEntity();
+            preencheValores(universidadeEntity);
             try
             {
                 if (new UniversidadeDao(this).insert(universidadeEntity))
@@ -190,7 +190,7 @@ public class CadastroDeUniversidade extends AppCompatActivity
         }
         else
         {
-            preencheValores();
+            preencheValores(universidadeEntity);
             if (new UniversidadeDao(this).update(universidadeEntity) > 0)
                 fechaTelaSucesso();
             else
@@ -206,7 +206,7 @@ public class CadastroDeUniversidade extends AppCompatActivity
             PopupInformacao.mostraMensagem(this, "Erro ao remover");
     }
 
-    private void preencheValores()
+    private void preencheValores(UniversidadeEntity universidadeEntity)
     {
         universidadeEntity.setCodigo(Long.valueOf(etCodigo.getText().toString()));
         universidadeEntity.setCidade(etCidade.getText().toString().trim());

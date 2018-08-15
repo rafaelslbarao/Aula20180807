@@ -7,19 +7,19 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class Database extends SQLiteOpenHelper
 {
     private static final String DATABASE_NAME = "bancoDeDados";
-    private static SQLiteDatabase instace;
+    private static SQLiteDatabase instance;
 
     public Database(Context context, String name, SQLiteDatabase.CursorFactory factory, int version)
     {
         super(context, name, factory, version);
     }
 
-    public static SQLiteDatabase getInstace(Context context)
+    public static SQLiteDatabase getInstance(Context context)
     {
-        if(instace == null)
-            instace = new Database(context, DATABASE_NAME, null, 1).getWritableDatabase();
+        if(instance == null)
+            instance = new Database(context, DATABASE_NAME, null, 1).getWritableDatabase();
 
-        return  instace;
+        return instance;
     }
 
     @Override

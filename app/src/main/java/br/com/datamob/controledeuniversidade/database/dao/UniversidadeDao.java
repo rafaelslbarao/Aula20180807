@@ -20,7 +20,7 @@ public class UniversidadeDao
 
     public UniversidadeDao(Context context)
     {
-        this.db = Database.getInstace(context);
+        this.db = Database.getInstance(context);
     }
 
     public boolean insert(UniversidadeEntity... entities)
@@ -45,7 +45,7 @@ public class UniversidadeDao
         ArrayList<UniversidadeEntity> retorno = new ArrayList<>();
 
         Cursor cursor = db.query(TABLE_NAME, COLUMNS_NAMES, null, null, null, null,
-                "nome");
+                "upper(nome), upper(cidade)");
 
         if (cursor.moveToFirst())
         {
@@ -69,9 +69,7 @@ public class UniversidadeDao
     {
         ArrayList<UniversidadeEntity> retorno = new ArrayList<>();
 
-        Cursor cursor = db.query(TABLE_NAME, COLUMNS_NAMES
-                , "codigo = ?", new String[]{codigo}, null, null,
-                "nome");
+        Cursor cursor = db.query(TABLE_NAME, COLUMNS_NAMES, "codigo = ?", new String[]{codigo}, null, null, null);
 
         UniversidadeEntity entity = null;
         if (cursor.moveToFirst())
@@ -80,7 +78,7 @@ public class UniversidadeDao
             entity.setCodigo(cursor.getLong(0));
             entity.setNome(cursor.getString(1));
             entity.setCidade(cursor.getString(2));
-            return  entity;
+            return entity;
         }
         cursor.close();
         return entity;
