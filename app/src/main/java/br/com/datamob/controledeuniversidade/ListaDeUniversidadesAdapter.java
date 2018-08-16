@@ -11,13 +11,13 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import br.com.datamob.controledeuniversidade.database.entity.UniversidadeEntity;
+import br.com.datamob.controledeuniversidade.database.view_entity.UniversidadeCidadeEntity;
 
-public class ListaDeUniversidadesAdapter extends ArrayAdapter<UniversidadeEntity>
+public class ListaDeUniversidadesAdapter extends ArrayAdapter<UniversidadeCidadeEntity>
 {
     private LayoutInflater inflater;
 
-    public ListaDeUniversidadesAdapter(@NonNull Context context, @NonNull List<UniversidadeEntity> objects)
+    public ListaDeUniversidadesAdapter(@NonNull Context context, @NonNull List<UniversidadeCidadeEntity> objects)
     {
         super(context, R.layout.item_lista_universidades, objects);
         inflater = LayoutInflater.from(context);
@@ -40,10 +40,10 @@ public class ListaDeUniversidadesAdapter extends ArrayAdapter<UniversidadeEntity
         else
             holder = (Holder) convertView.getTag();
         //
-        UniversidadeEntity item = getItem(position);
+        UniversidadeCidadeEntity item = getItem(position);
         holder.tvCodigo.setText(item.getCodigo().toString());
-        holder.tvNome.setText(item.getNome());
-        holder.tvCidade.setText(item.getCidade());
+        holder.tvNome.setText(item.getNome_universidade());
+        holder.tvCidade.setText(item.getNome_cidade() + " - " + item.getEstado());
         //
         return convertView;
     }

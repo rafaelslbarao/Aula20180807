@@ -25,11 +25,18 @@ public class Database extends SQLiteOpenHelper
     @Override
     public void onCreate(SQLiteDatabase db)
     {
-        db.execSQL("create table Universidade " +
-                "(codigo INTEGER, " +
-                "nome TEXT, " +
-                "cidade TEXT" +
+        db.execSQL("create table Cidade " +
+                "(codigo INTEGER " +
+                ", nome TEXT not null" +
+                ", estado TEXT not null" +
                 ", primary key (codigo))");
+
+        db.execSQL("create table Universidade " +
+                "(codigo INTEGER " +
+                ", nome TEXT not null" +
+                ", cidade INTEGER" +
+                ", primary key (codigo)" +
+                ", foreign key (cidade) references Cidade(codigo))");
     }
 
     @Override

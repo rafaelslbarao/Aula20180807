@@ -8,8 +8,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import br.com.datamob.controledeuniversidade.database.dao.UniversidadeDao;
-import br.com.datamob.controledeuniversidade.database.entity.UniversidadeEntity;
+import br.com.datamob.controledeuniversidade.database.view_dao.UniversidadeCidadeDao;
+import br.com.datamob.controledeuniversidade.database.view_entity.UniversidadeCidadeEntity;
 
 public class ListaDeUniversidades extends AppCompatActivity
 {
@@ -43,7 +43,7 @@ public class ListaDeUniversidades extends AppCompatActivity
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                UniversidadeEntity item = (UniversidadeEntity) lvInformacoes.getAdapter().getItem(position);
+                UniversidadeCidadeEntity item = (UniversidadeCidadeEntity) lvInformacoes.getAdapter().getItem(position);
                 Intent intent = new Intent(ListaDeUniversidades.this, CadastroDeUniversidade.class);
                 intent.putExtra(CadastroDeUniversidade.EXTRA_CODIGO, item.getCodigo());
                 startActivity(intent);
@@ -60,6 +60,6 @@ public class ListaDeUniversidades extends AppCompatActivity
 
     private void carregaLista()
     {
-        lvInformacoes.setAdapter(new ListaDeUniversidadesAdapter(this, new UniversidadeDao(this).selectAll()));
+        lvInformacoes.setAdapter(new ListaDeUniversidadesAdapter(this, new UniversidadeCidadeDao(this).selectAll()));
     }
 }

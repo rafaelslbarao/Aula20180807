@@ -1,20 +1,20 @@
 package br.com.datamob.controledeuniversidade.database.entity;
 
-public class UniversidadeEntity
+public class CidadeEntity
 {
     private Long codigo;
     private String nome;
-    private Long cidade;
+    private String estado;
 
-    public UniversidadeEntity()
+    public CidadeEntity()
     {
     }
 
-    public UniversidadeEntity(Long codigo, String nome, Long cidade)
+    public CidadeEntity(Long codigo, String nome, String estado)
     {
         this.codigo = codigo;
         this.nome = nome;
-        this.cidade = cidade;
+        this.estado = estado;
     }
 
     public Long getCodigo()
@@ -37,13 +37,19 @@ public class UniversidadeEntity
         this.nome = nome;
     }
 
-    public Long getCidade()
+    public String getEstado()
     {
-        return cidade;
+        return estado;
     }
 
-    public void setCidade(Long cidade)
+    public void setEstado(String estado)
     {
-        this.cidade = cidade;
+        this.estado = estado;
+    }
+
+    @Override
+    public String toString()
+    {
+        return nome.toString() + " - " + estado.toString();
     }
 }

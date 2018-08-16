@@ -51,12 +51,7 @@ public class UniversidadeDao
         {
             do
             {
-                UniversidadeEntity entity = new UniversidadeEntity();
-                retorno.add(entity);
-                //
-                entity.setCodigo(cursor.getLong(0));
-                entity.setNome(cursor.getString(1));
-                entity.setCidade(cursor.getString(2));
+                retorno.add(getEntity(cursor));
             }
             while (cursor.moveToNext());
         }
@@ -71,16 +66,21 @@ public class UniversidadeDao
 
         Cursor cursor = db.query(TABLE_NAME, COLUMNS_NAMES, "codigo = ?", new String[]{codigo}, null, null, null);
 
-        UniversidadeEntity entity = null;
         if (cursor.moveToFirst())
         {
-            entity = new UniversidadeEntity();
-            entity.setCodigo(cursor.getLong(0));
-            entity.setNome(cursor.getString(1));
-            entity.setCidade(cursor.getString(2));
-            return entity;
+            return getEntity(cursor);
         }
         cursor.close();
+        return null;
+    }
+
+    private UniversidadeEntity getEntity(Cursor cursor)
+    {
+        UniversidadeEntity entity = null;
+        entity = new UniversidadeEntity();
+        entity.setCodigo(cursor.getLong(0));
+        entity.setNome(cursor.getString(1));
+        entity.setCidade(cursor.getLong(2));
         return entity;
     }
 
@@ -98,5 +98,17 @@ public class UniversidadeDao
         //
         return db.update(TABLE_NAME, contentValues, "codigo = ?"
                 , new String[]{entity.getCodigo().toString()});
+    }
+
+    public Long getProximoCodigo()
+    {
+        Long retorno = null;
+        Cursor cursor = db.rawQuery("select ifnull(max(codigo), 0) + 1 from " + TABLE_NAME, null);
+        if (cursor.moveToFirst())
+        {
+            retorno = cursor.getLong(0);
+        }
+        cursor.close();
+        return retorno;
     }
 }

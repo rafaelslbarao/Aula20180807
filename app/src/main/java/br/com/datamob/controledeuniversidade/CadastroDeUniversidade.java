@@ -1,8 +1,9 @@
 package br.com.datamob.controledeuniversidade;
 
-import android.app.Activity;
+import android.content.Intent;
 import android.database.sqlite.SQLiteConstraintException;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
@@ -10,23 +11,30 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.TextView;
 
+import java.util.List;
+
+import br.com.datamob.controledeuniversidade.database.dao.CidadeDao;
 import br.com.datamob.controledeuniversidade.database.dao.UniversidadeDao;
+import br.com.datamob.controledeuniversidade.database.entity.CidadeEntity;
 import br.com.datamob.controledeuniversidade.database.entity.UniversidadeEntity;
 import br.com.datamob.controledeuniversidade.dialogs.PopupInformacao;
 
 public class CadastroDeUniversidade extends AppCompatActivity
 {
     public static final String EXTRA_CODIGO = "br.com.datamob.controledeuniversidade.codigo";
+    private static final int CADASTRO_CIDADE = 1;
     //
-    private TextInputLayout tilCodigo;
+    private TextView tvCodigo;
     private TextInputLayout tilNome;
-    private TextInputLayout tilCidade;
-    private TextInputEditText etCodigo;
     private TextInputEditText etNome;
-    private TextInputEditText etCidade;
+    private Spinner spCidade;
     //
     private UniversidadeEntity universidadeEntity;
+    private List<CidadeEntity> cidades;
     //
 
     @Override
@@ -37,41 +45,32 @@ public class CadastroDeUniversidade extends AppCompatActivity
         Long codigo = getIntent().getLongExtra(EXTRA_CODIGO, -1);
         universidadeEntity = new UniversidadeDao(this).selectByCodigo(codigo.toString());
         ininicializaComponentes();
+        carregaCidades();
         if (universidadeEntity != null)
             carregaValores();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode)
+        {
+            case CADASTRO_CIDADE:
+                carregaCidades();
+                break;
+        }
+    }
+
     private void ininicializaComponentes()
     {
-        tilCodigo = findViewById(R.id.tilCodigo);
+        tvCodigo = findViewById(R.id.tvCodigo);
         tilNome = findViewById(R.id.tilNome);
-        tilCidade = findViewById(R.id.tilCidade);
-        etCodigo = findViewById(R.id.etCodigo);
         etNome = findViewById(R.id.etNome);
-        etCidade = findViewById(R.id.etCidade);
+        spCidade = findViewById(R.id.spCidade);
         FloatingActionButton fabConfirmar = findViewById(R.id.fabConfirmar);
         FloatingActionButton fabDeletar = findViewById(R.id.fabDeletar);
-        //
-        etCodigo.addTextChangedListener(new TextWatcher()
-        {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after)
-            {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count)
-            {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s)
-            {
-                tilCodigo.setError(null);
-            }
-        });
+        FloatingActionButton fabAdicionarCidade = findViewById(R.id.fabAdicionarCidade);
         //
         etNome.addTextChangedListener(new TextWatcher()
         {
@@ -94,27 +93,6 @@ public class CadastroDeUniversidade extends AppCompatActivity
             }
         });
         //
-        etCidade.addTextChangedListener(new TextWatcher()
-        {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after)
-            {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count)
-            {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s)
-            {
-                tilCidade.setError(null);
-            }
-        });
-        //
         fabConfirmar.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -123,6 +101,16 @@ public class CadastroDeUniversidade extends AppCompatActivity
                 confirmaTela();
             }
         });
+        //
+        fabAdicionarCidade.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                startActivityForResult(new Intent(CadastroDeUniversidade.this, CadastroDeCidade.class), CADASTRO_CIDADE);
+            }
+        });
+        //
         if (universidadeEntity == null)
             fabDeletar.setEnabled(false);
         else
@@ -136,6 +124,17 @@ public class CadastroDeUniversidade extends AppCompatActivity
                 }
             });
         }
+        //
+        tvCodigo.setText(new UniversidadeDao(this).getProximoCodigo().toString());
+    }
+
+    private void carregaCidades()
+    {
+        List<CidadeEntity> cidadeEntities = new CidadeDao(this).selectAll();
+        cidadeEntities.add(0, new CidadeEntity(0l, "Cidade", "Estado"));
+        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, cidadeEntities);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spCidade.setAdapter(adapter);
     }
 
     private void confirmaTela()
@@ -149,11 +148,6 @@ public class CadastroDeUniversidade extends AppCompatActivity
     private boolean validaTela()
     {
         boolean retorno = true;
-        if (etCodigo.getText().toString().trim().length() == 0)
-        {
-            tilCodigo.setError("Informe o código da universidade");
-            retorno = false;
-        }
         //
         if (etNome.getText().toString().trim().length() == 0)
         {
@@ -161,9 +155,9 @@ public class CadastroDeUniversidade extends AppCompatActivity
             retorno = false;
         }
         //
-        if (etCidade.getText().toString().trim().length() == 0)
+        if (spCidade.getSelectedItemPosition() <= 0)
         {
-            tilCidade.setError("Informe a cidade da universidade");
+            PopupInformacao.mostraMensagem(this, "Selecione a cidade e estado");
             retorno = false;
         }
         //
@@ -208,21 +202,26 @@ public class CadastroDeUniversidade extends AppCompatActivity
 
     private void preencheValores(UniversidadeEntity universidadeEntity)
     {
-        universidadeEntity.setCodigo(Long.valueOf(etCodigo.getText().toString()));
-        universidadeEntity.setCidade(etCidade.getText().toString().trim());
+        universidadeEntity.setCodigo(Long.valueOf(tvCodigo.getText().toString()));
+        universidadeEntity.setCidade(((CidadeEntity) spCidade.getSelectedItem()).getCodigo());
         universidadeEntity.setNome(etNome.getText().toString().trim());
     }
 
     private void fechaTelaSucesso()
     {
-        setResult(Activity.RESULT_OK);
         finish();
     }
 
     private void carregaValores()
     {
-        etCodigo.setText(universidadeEntity.getCodigo().toString());
-        etCidade.setText(universidadeEntity.getCidade());
+        tvCodigo.setText(universidadeEntity.getCodigo().toString());
         etNome.setText(universidadeEntity.getNome());
+        for (int i = 1; i < spCidade.getCount(); i++)
+        {
+            if (((CidadeEntity) spCidade.getItemAtPosition(i)).getCodigo().equals(universidadeEntity.getCidade()))
+            {
+                spCidade.setSelection(i, true);
+            }
+        }
     }
 }
